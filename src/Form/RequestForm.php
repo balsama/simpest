@@ -143,14 +143,19 @@ class RequestForm extends FormBase {
     $post_data = Yaml::parseFile($values['post_data']);
     $post_data = ['data' => $post_data];
 
-    $request = new Request($values['server'], $values['client_uuid'], $this->httpClient);
+    $request = new Request($values['server'], $this->httpClient);
     $request->setClientOptions($client_config);
     $request->getAndSetToken();
     $request->setPostData($post_data);
 
     $response = $request->request($values['endpoint'], $values['method']);
-    drupal_set_message('Data: ' . $values['method']);
-    drupal_set_message('UUID: ' . $response->data->id);
+    if ($values['method'] == 'get') {
+      drupal_set_message(serialize($response));
+    }
+    else {
+      drupal_set_message('Data: ' . $values['method']);
+      drupal_set_message('UUID: ' . $response->data->id);
+    }
   }
 
 }

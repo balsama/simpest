@@ -45,10 +45,9 @@ class Request {
    */
   protected $clientOptions;
 
-  public function __construct($server, $clientUUID, ClientInterface $client)
+  public function __construct($server, ClientInterface $client)
   {
     $this->setServer($server);
-    $this->setCLientOptions($clientUUID);
     $this->client = $client;
   }
 
