@@ -1,0 +1,5 @@
+type: node--page
+attributes:
+  title: Hey! who needs a page?
+  body:
+    value: Cause I got one.

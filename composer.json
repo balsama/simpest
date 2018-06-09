@@ -1,0 +1,14 @@
+{
+  "name": "drupal/simpest",
+  "type": "drupal-module",
+  "description": "Simple OAuth2 and JSON API requests",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/simpest",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/simpest",
+    "source": "http://cgit.drupalcode.org/simpest"
+  },
+  "require": { }
+}
