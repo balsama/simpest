@@ -77,6 +77,16 @@ class RequestForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['method'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Method'),
+      '#options' => [
+        'get' => 'get',
+        'post' => 'post',
+        'patch' => 'patch',
+      ],
+      '#weight' => '0',
+    ];
     $form['client_config'] = [
       '#type' => 'select',
       '#title' => $this->t('Client config'),
@@ -90,6 +100,11 @@ class RequestForm extends FormBase {
       '#description' => $this->t('Select the data to send as the body'),
       '#options' => $this->getSelectOptions('PostData'),
       '#weight' => '0',
+      '#states' => array(
+        'invisible' => array(
+          'select[name="method"]' => array('value' => 'get'),
+        ),
+      ),
     ];
     $form['server'] = [
       '#type' => 'textfield',
@@ -97,16 +112,6 @@ class RequestForm extends FormBase {
       '#maxlength' => 128,
       '#size' => 64,
       '#default_value' => 'http://localhost/lightning_api/docroot',
-      '#weight' => '0',
-    ];
-    $form['method'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Method'),
-      '#options' => [
-        'get' => 'get',
-        'post' => 'post',
-        'patch' => 'patch',
-      ],
       '#weight' => '0',
     ];
     $form['endpoint'] = [
@@ -146,7 +151,9 @@ class RequestForm extends FormBase {
     $request = new Request($values['server'], $this->httpClient);
     $request->setClientOptions($client_config);
     $request->getAndSetToken();
-    $request->setPostData($post_data);
+    if ($values['method'] != 'get') {
+      $request->setPostData($post_data);
+    }
 
     $response = $request->request($values['endpoint'], $values['method']);
     if ($values['method'] == 'get') {
