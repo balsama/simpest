@@ -4,6 +4,7 @@ namespace Drupal\simpest;
 
 use Psr\Http\Message\ResponseInterface;
 use GuzzleHttp\ClientInterface;
+use Psr\Log\InvalidArgumentException;
 
 /**
  * Authenticates via OAuth2 and makes requests to JSON API endpoints.
@@ -34,7 +35,7 @@ class Request {
   /**
    * @var string or null
    *
-   * The token to be sent as part of the header.
+   * The OAuth2 token to be sent as part of the header.
    */
   protected $token;
 
@@ -86,7 +87,7 @@ class Request {
   }
 
   /**
-   * Gets an OAuth2 token from the client sepcified in $this->clientOptions and
+   * Gets an OAuth2 token from the client specified in $this->clientOptions and
    * stores it in $this->token.
    */
   public function getAndSetToken() {
@@ -137,10 +138,13 @@ class Request {
   /**
    * @param $server
    *   The server used in all requests.
+   *
+   * @throws \Psr\Log\InvalidArgumentException
+   *   If the provided server isn't a valid URL.
    */
   public function setServer($server) {
-    if (!is_string($server)) {
-      throw new \InvalidArgumentException("Server must be a string");
+    if (!preg_match('/^https?:\/\/.*/', $server)) {
+      throw new \InvalidArgumentException("Server must be a valid URL with protocol. E.g. https://foo.com or http://bar.com");
     }
     $this->server = $server;
   }
@@ -148,8 +152,15 @@ class Request {
   /**
    * @param $data
    *   The client options for the consumer.
+   *
+   * @throws \Psr\Log\InvalidArgumentException
+   *   If the provided client configuration doesn't include the proper keys.
    */
   public function setClientOptions($data) {
+    $required_keys = ['grant_type', 'client_id', 'client_secret', 'username', 'password'];
+    if (!empty(array_diff($required_keys, array_keys($data['form_params'])))) {
+      throw new InvalidArgumentException('Client configuration must include the following keys: grant_type, client_id, client_secret, username, and password');
+    }
     $this->clientOptions = $data;
   }
 
@@ -158,6 +169,9 @@ class Request {
    *   The data to post or patch.
    */
   public function setPostData($data) {
+    if (!is_array($data)) {
+      throw new InvalidArgumentException('Post data must be an array.');
+    }
     $this->data = $data;
   }
 

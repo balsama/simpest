@@ -6,7 +6,7 @@ use Drupal\Core\Url;
 use Drupal\Tests\BrowserTestBase;
 
 /**
- * Simple test to ensure that main page loads with module enabled.
+ * Simple test to ensure that the Request form loads with module enabled.
  *
  * @group simpest
  */
@@ -31,7 +31,8 @@ class LoadTest extends BrowserTestBase {
    */
   protected function setUp() {
     parent::setUp();
-    $this->user = $this->drupalCreateUser(['administer site configuration']);
+    // The form doesn't have any access restrictions.
+    $this->user = $this->drupalCreateUser([]);
     $this->drupalLogin($this->user);
   }
 
@@ -39,7 +40,7 @@ class LoadTest extends BrowserTestBase {
    * Tests that the home page loads with a 200 response.
    */
   public function testLoad() {
-    $this->drupalGet(Url::fromRoute('<front>'));
+    $this->drupalGet(Url::fromRoute('simpest.request_form'));
     $this->assertSession()->statusCodeEquals(200);
   }
 

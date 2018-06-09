@@ -3,7 +3,7 @@ simpest.request_form:
   path: '/simpest/form/request'
   defaults:
     _form: '\Drupal\simpest\Form\RequestForm'
-    _title: 'RequestForm'
+    _title: 'Request Form'
   requirements:
     _access: 'TRUE'
   
