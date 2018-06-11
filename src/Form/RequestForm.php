@@ -32,13 +32,13 @@ class RequestForm extends FormBase {
   }
 
   /**
-   * Gets the names or and paths to the yaml files in a specified directory.
+   * Gets the names and paths to the yaml files in a specified directory.
    *
    * @param $location
    *   The name of the directory in which the yaml files are stored.
    *
    * @return array
-   *   Array of filenames and full paths.
+   *   Array of filenames keyed by their full paths.
    */
   protected function getSelectOptions($location) {
     $files = [];
@@ -142,20 +142,21 @@ class RequestForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-
-    $client_config = Yaml::parseFile($values['client_config']);
-    $client_config = ['form_params' => $client_config];
-    $post_data = Yaml::parseFile($values['post_data']);
-    $post_data = ['data' => $post_data];
-
     $request = new Request($values['server'], $this->httpClient);
+
+    // Get and set token from provided client config.
+    $client_config = $this->getRequestDataFromFile($values['client_config'], 'form_params');
     $request->setClientOptions($client_config);
     $request->getAndSetToken();
+
     if ($values['method'] != 'get') {
+      $post_data = $this->getRequestDataFromFile($values['post_data'], 'data');
       $request->setPostData($post_data);
     }
 
     $response = $request->request($values['endpoint'], $values['method']);
+
+    // Give some output based on the request type.
     if ($values['method'] == 'get') {
       drupal_set_message(serialize($response));
     }
@@ -163,6 +164,22 @@ class RequestForm extends FormBase {
       drupal_set_message('Data: ' . $values['method']);
       drupal_set_message('UUID: ' . $response->data->id);
     }
+  }
+
+  /**
+   * Gets contents of a yaml file and optionally wraps it in an array key.
+   * @param $filepath
+   *   Path to a yaml file containing config.
+   * @param null $wrapper
+   *   Array key in which to wrap the data contained in the file.
+   * @return array|mixed
+   */
+  protected function getRequestDataFromFile($filepath, $wrapper = null) {
+    $data = Yaml::parseFile($filepath);
+    if ($wrapper) {
+      $data = [$wrapper => $data];
+    }
+    return $data;
   }
 
 }
