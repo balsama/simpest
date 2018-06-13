@@ -1,14 +1,70 @@
 {
-  "name": "drupal/simpest",
-  "type": "drupal-module",
-  "description": "Simple OAuth2 and JSON API requests",
-  "keywords": ["Drupal"],
-  "license": "GPL-2.0+",
-  "homepage": "https://www.drupal.org/project/simpest",
-  "minimum-stability": "dev",
-  "support": {
-    "issues": "https://www.drupal.org/project/issues/simpest",
-    "source": "http://cgit.drupalcode.org/simpest"
-  },
-  "require": { }
+    "name": "drupal/simpest",
+    "type": "drupal-module",
+    "description": "Simple OAuth2 and JSON API requests",
+    "keywords": ["Drupal"],
+    "license": "GPL-2.0+",
+    "homepage": "https://www.drupal.org/project/simpest",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://github.com/balsama/simpest/issues",
+        "source": "https://github.com/balsama/simpest"
+    },
+    "repositories": {
+        "drupal": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        "dev": {
+            "type": "github",
+            "url": "https://github.com/acquia/lightning-dev",
+            "no-api": true
+        }
+    },
+    "require-dev": {
+        "acquia/lightning_dev": "dev-8.x-1.x",
+        "drupal-composer/drupal-scaffold": "^2.0.0",
+        "drupal/lightning_api": "^2.0"
+    },
+    "require": {
+        "drupal/core": "^8.5"
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@push",
+            "@drupal-scaffold"
+        ],
+        "post-update-cmd": [
+            "@push",
+            "@drupal-scaffold"
+        ],
+        "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
+        "nuke": "rm -r -f docroot vendor",
+        "pull": "Acquia\\Lightning\\Commands\\FileCommands::pull",
+        "push": "Acquia\\Lightning\\Commands\\FileCommands::push"
+    },
+    "extra": {
+        "installer-paths": {
+            "docroot/core": [
+                "type:drupal-core"
+            ],
+            "docroot/modules/contrib/{$name}": [
+                "type:drupal-module"
+            ],
+            "docroot/profiles/contrib/{$name}": [
+                "type:drupal-profile"
+            ],
+            "docroot/themes/contrib/{$name}": [
+                "type:drupal-theme"
+            ]
+        }
+    },
+    "config": {
+        "preferred-install": {
+            "drupal/core": "dist"
+        },
+        "platform": {
+            "php": "7.0.8"
+        }
+    }
 }
