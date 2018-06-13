@@ -8,7 +8,7 @@
     "minimum-stability": "dev",
     "support": {
         "issues": "https://github.com/balsama/simpest/issues",
-        "source": "https://github.com/balsama/simpest.git"
+        "source": "https://github.com/balsama/simpest"
     },
     "repositories": {
         "drupal": {
